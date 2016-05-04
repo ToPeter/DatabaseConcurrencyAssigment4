@@ -20,8 +20,9 @@ public class DatabaseConcurrencyAssigment4 {
         
 //       class used only to test small stuff
         Reservation r = new Reservation("db_027", "db2016");
-        r.reserve("CR9", 13);
+        String result = r.reserve("CR9", 13);
         r.closeConnection();
+        System.out.println(result);
     }
     
 }
