@@ -6,6 +6,8 @@
 package databaseconcurrencyassigment4;
 
 import domain.Reservation;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -21,8 +23,16 @@ public class DatabaseConcurrencyAssigment4 {
 //       class used only to test small stuff
         Reservation r = new Reservation("db_027", "db2016");
         String result = r.reserve("CR9", 13);
-        r.closeConnection();
         System.out.println(result);
+        
+        try {
+            Thread.sleep(6000);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(DatabaseConcurrencyAssigment4.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        int status = r.book("CR9", result, 13);
+        System.out.println(status);
+        
+        r.closeConnection();
     }
-    
 }

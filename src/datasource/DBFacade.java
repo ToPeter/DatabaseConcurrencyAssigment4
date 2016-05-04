@@ -57,4 +57,7 @@ public class DBFacade {
         return dataMapper.reserve(plane_no, id, connection);
     }
 
+    public Integer book(String plane_no, String seat_no, long id) {
+        return dataMapper.book(plane_no, seat_no, id, connection);
+    }
 }

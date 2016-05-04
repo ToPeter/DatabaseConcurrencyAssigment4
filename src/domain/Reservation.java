@@ -26,7 +26,8 @@ public class Reservation {
     }
     
     public Boolean closeConnection() {
-        return dbFacade.closeConnection();
+        dbStatus = !dbFacade.closeConnection();
+        return !dbStatus;
     }
 
     public String reserve(String plane_no, long id) {
@@ -37,8 +38,10 @@ public class Reservation {
     }
 
     public Integer book(String plane_no, String seat_no, long id) {
-
-        return null;
+        if (dbStatus == false) {
+            return null;
+        }
+        return dbFacade.book(plane_no, seat_no, id);
     }
 
     public boolean bookAll(String plane_no) {
