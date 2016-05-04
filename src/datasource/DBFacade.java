@@ -16,56 +16,45 @@ import java.util.logging.Logger;
  * @author redrose
  */
 public class DBFacade {
-    
-    
+
     private DataMapper dataMapper;
     private Connection connection;
-    
+
     private String dbHost = "jdbc:oracle:thin:@datdb.cphbusiness.dk:1521:dat";
-    private String dbUsername = "db_027";
-    private String dbPassword = "db2016";
+    private String dbUsername, dbPassword;
+//    dbUsername = "db_027", dbPassword = "db2016";
 
-    public DBFacade()
-    {
-        dataMapper = new DataMapper();
-
+    public DBFacade(String user, String pw) {
+        this.dataMapper = new DataMapper();
+        this.dbUsername = user;
+        this.dbPassword = pw;
     }
 
-    public boolean createConnection()
-    {
-        try
-        {
+    public boolean createConnection() {
+        try {
             Class.forName("oracle.jdbc.driver.OracleDriver");
             connection = DriverManager.getConnection(dbHost, dbUsername, dbPassword);
-        } catch (ClassNotFoundException e)
-        {
+            connection.setAutoCommit(false);
+        } catch (ClassNotFoundException | SQLException e) {
             Logger.getLogger(DBFacade.class.getName()).log(Level.SEVERE, null, e);
             return false;
+        }
+
+        return true;
+    }
+
+    public boolean closeConnection() {
+        try {
+            connection.close();
         } catch (SQLException ex) {
             Logger.getLogger(DBFacade.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         }
-
         return true;
     }
 
-    public boolean closeConnection()
-    {
-        try
-        {
-            connection.close();
-        } catch (SQLException ex)
-        {
-            Logger.getLogger(DBFacade.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
-        }
-        return true;
+    public String reserve(String plane_no, long id) {
+        return dataMapper.reserve(plane_no, id, connection);
     }
 
-    
-    public boolean addNewClient()
-    {
-        return false;
-    }
-    
 }

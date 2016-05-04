@@ -5,6 +5,8 @@
  */
 package databaseconcurrencyassigment4;
 
+import domain.Reservation;
+
 /**
  *
  * @author redrose
@@ -16,7 +18,10 @@ public class DatabaseConcurrencyAssigment4 {
      */
     public static void main(String[] args) {
         
-       
+//       class used only to test small stuff
+        Reservation r = new Reservation("db_027", "db2016");
+        r.reserve("CR9", 13);
+        r.closeConnection();
     }
     
 }

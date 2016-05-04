@@ -5,7 +5,12 @@
  */
 package datasource;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -13,77 +18,56 @@ import java.sql.SQLException;
  */
 public class DataMapper {
     
-    public boolean checkUserLogin(Long username, String password)
-    {
-//        userType = null;
-//        String sqlString1 = "SELECT POSITION, PASSWORD FROM EMPLOYEES "
-//                + "WHERE ID = ?";
-//        String sqlString2 = "SELECT PASSWORD FROM CLIENTS "
-//                + "WHERE ID = ?";
-//        PreparedStatement statement;
-//        try
-//        {
-//            statement = connection.prepareStatement(sqlString1);
-//            statement.setLong(1, username);
-//
-//            ResultSet rs = statement.executeQuery();
-//            if (rs.next())
-//            {
-//                userType = rs.getString(1);
-//                if (rs.getString(2).equals(password))
-//                {
-//                    return true;
-//                }
-//            } else
-//            {
-//                statement = connection.prepareStatement(sqlString2);
-//                statement.setLong(1, username);
-//
-//                rs = statement.executeQuery();
-//                if (rs.next())
-//                {
-//                    userType = "Client";
-//                    if (rs.getString(1).equals(password))
-//                    {
-//                        return true;
-//                    }
-//                }
-//            }
-//            statement.close();
-//        } catch (SQLException ex)
-//        {
-//            System.out.println("Fail in DataMapper - checkUserLogin");
-//            Logger.getLogger(DataMapper.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-        return false;
+    public String reserve(String plane_no, long id, Connection connection) {
+        PreparedStatement statement;
+        ResultSet rs;
+        String empty_seat = null;
+        
+        String sqlString0 = "select SEAT_NO from SEAT "
+                + "where PLANE_NO = ? "
+                + "and (RESERVED is NULL "
+                + "  or (BOOKED is NULL and BOOKING_TIME < ?)) "
+                + "and ROWNUM <= 1 ";
+//                + "for update ";
+
+        String sqlString1 = "update SEAT "
+                + "set RESERVED = ?, BOOKING_TIME = ? "
+                + "where PLANE_NO = ? "
+                + "and SEAT_NO = ?";
+        
+        try {
+            Long time_now_in_sec = System.currentTimeMillis()/1000;
+            
+            statement = connection.prepareStatement(sqlString0);
+            statement.setString(1, plane_no);
+            statement.setLong(2, time_now_in_sec - 5);
+            rs = statement.executeQuery();
+            if (rs.next()) {
+                empty_seat = rs.getString(1);
+                System.out.println(empty_seat);
+                
+                statement = connection.prepareStatement(sqlString1);
+                statement.setLong(1, id);
+                statement.setLong(2, time_now_in_sec);
+                statement.setString(3, plane_no);
+                statement.setString(4, empty_seat);
+
+                System.out.println("getting here");
+                int count = statement.executeUpdate();
+                System.out.println(count);
+                System.out.println("but not here");
+                connection.commit();
+                return empty_seat;
+            }
+            else {
+                connection.rollback();
+                return null;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DataMapper.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
     }
 
-
-
-//    public ArrayList getAllRooms(Connection connection)
-//    {
-//        ArrayList result = new ArrayList<>();
-//        PreparedStatement statement;
-//        String sqlString = "SELECT R.ID, R.TYPE, RT.CAPACITY, RT.PRICE FROM ROOMS R "
-//                + "JOIN ROOM_TYPES RT ON R.TYPE = RT.TYPE "
-//                + "ORDER BY R.ID";
-//
-//        try
-//        {
-//            statement = connection.prepareStatement(sqlString);
-//            ResultSet rs = statement.executeQuery();
-//            while (rs.next())
-//            {
-//                result.add(new Room(rs.getInt(1), rs.getString(2), rs.getInt(3), rs.getDouble(4)));
-//            }
-//
-//            statement.close();
-//        } catch (SQLException ex)
-//        {
-//            System.out.println("Fail in DataMapper - getAllRooms");
-//            Logger.getLogger(DataMapper.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-//        return result;
-//    }
     
 }

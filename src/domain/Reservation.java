@@ -13,50 +13,50 @@ import datasource.DBFacade;
  */
 public class Reservation {
 
-    
     private DBFacade dbFacade;
     private String user, pw;
- 
-    
-    
-    public Reservation(String user, String pw) { 
+    private Boolean dbStatus;
+
+    public Reservation(String user, String pw) {
         this.user = user;
         this.pw = pw;
-        
-        dbFacade = new DBFacade();
-        dbFacade.createConnection();
+
+        dbFacade = new DBFacade(user, pw);
+        dbStatus = dbFacade.createConnection();
     }
     
-    public String reserve(String plane_no, long id){
-        
-        // check book 
-        
+    public Boolean closeConnection() {
+        return dbFacade.closeConnection();
+    }
+
+    public String reserve(String plane_no, long id) {
+        if (dbStatus == false) {
+            return null;
+        }
+        return dbFacade.reserve(plane_no, id);
+    }
+
+    public Integer book(String plane_no, String seat_no, long id) {
+
         return null;
     }
-    
-    public Integer book(String plane_no, String	seat_no, long	id){
-        
-        return null;
-    }
-    
-    public boolean bookAll (String plane_no){
+
+    public boolean bookAll(String plane_no) {
         return false;
     }
-    
-    public boolean clearAllBookings(String plane_no){
+
+    public boolean clearAllBookings(String plane_no) {
         return false;
     }
-            
-    public boolean isAllBooked(String plane_no){
-        
+
+    public boolean isAllBooked(String plane_no) {
+
         return false;
     }
-    
-    public boolean isAllReserved(String plane_no){
-    
+
+    public boolean isAllReserved(String plane_no) {
+
         return false;
     }
-    
-    
-    
+
 }
