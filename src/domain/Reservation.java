@@ -15,32 +15,19 @@ public class Reservation {
 
     private DBFacade dbFacade;
     private String user, pw;
-    private Boolean dbStatus;
 
     public Reservation(String user, String pw) {
         this.user = user;
         this.pw = pw;
 
-        dbFacade = new DBFacade(user, pw);
-        dbStatus = dbFacade.createConnection();
-    }
-    
-    public Boolean closeConnection() {
-        dbStatus = !dbFacade.closeConnection();
-        return !dbStatus;
+        dbFacade = DBFacade.getInstance();
     }
 
     public String reserve(String plane_no, long id) {
-        if (dbStatus == false) {
-            return null;
-        }
         return dbFacade.reserve(plane_no, id);
     }
 
     public Integer book(String plane_no, String seat_no, long id) {
-        if (dbStatus == false) {
-            return null;
-        }
         return dbFacade.book(plane_no, seat_no, id);
     }
 

@@ -22,12 +22,21 @@ public class DBFacade {
 
     private String dbHost = "jdbc:oracle:thin:@datdb.cphbusiness.dk:1521:dat";
     private String dbUsername, dbPassword;
-//    dbUsername = "db_027", dbPassword = "db2016";
 
-    public DBFacade(String user, String pw) {
+    private static DBFacade instance;
+
+    private DBFacade(String user, String pw) {
         this.dataMapper = new DataMapper();
         this.dbUsername = user;
         this.dbPassword = pw;
+        createConnection();
+    }
+
+    public static DBFacade getInstance() {
+        if (instance == null) {
+            instance = new DBFacade("db_027", "db2016");
+        }
+        return instance;
     }
 
     public boolean createConnection() {

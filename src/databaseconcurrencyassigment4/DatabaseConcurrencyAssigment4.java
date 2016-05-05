@@ -5,9 +5,8 @@
  */
 package databaseconcurrencyassigment4;
 
-import domain.Reservation;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import datasource.DBFacade;
+import java.util.ArrayList;
 
 /**
  *
@@ -19,20 +18,36 @@ public class DatabaseConcurrencyAssigment4 {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        
-//       class used only to test small stuff
-        Reservation r = new Reservation("db_027", "db2016");
-        String result = r.reserve("CR9", 13);
-        System.out.println(result);
-        
-        try {
-            Thread.sleep(6000);
-        } catch (InterruptedException ex) {
-            Logger.getLogger(DatabaseConcurrencyAssigment4.class.getName()).log(Level.SEVERE, null, ex);
+
+        SharedCounter sc = new SharedCounter();
+        ArrayList<Thread> tenThreads = new ArrayList();
+        UserThread userThread;
+
+        for (int i = 0; i < 10; i++) {
+            userThread = new UserThread(sc);
+            Thread t = new Thread(userThread);
+            t.start();
+            tenThreads.add(t);
         }
-        int status = r.book("CR9", result, 13);
-        System.out.println(status);
+
+        while (sc.getBookedSeatsCount() < 96) {
+            for (int i = 0; i < 10; i++) {
+                if (!tenThreads.get(i).isAlive()) {
+                    tenThreads.remove(i);
+                    userThread = new UserThread(sc);
+                    Thread t = new Thread(userThread);
+                    t.start();
+                    tenThreads.add(t);
+                    break;
+                }
+            }
+        }
         
-        r.closeConnection();
+        for (int i = 0; i < 10; i++) {
+            tenThreads.get(i).interrupt();
+        }
+
+        DBFacade.getInstance().closeConnection();
+        System.out.println(sc.getReservedSeatsCount() + " = " + sc.getBookedSeatsCount() + " + " + sc.getReservedAndNotBookedSeatsCount());
     }
 }
