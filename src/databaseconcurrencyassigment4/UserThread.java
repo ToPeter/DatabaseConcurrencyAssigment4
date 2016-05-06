@@ -17,6 +17,7 @@ import java.util.logging.Logger;
 public class UserThread implements Runnable {
 
     SharedCounter sc;
+    Reservation r;
 
     public UserThread(SharedCounter sc) {
         this.sc = sc;
@@ -28,16 +29,15 @@ public class UserThread implements Runnable {
         System.out.println("threadNo:" + threadNo);
 
 //      try to reserve a seat
-        Reservation r = new Reservation("db_027", "db2016");
+        r = new Reservation("db_027", "db2016");
 
-        if (sc.getBookedSeatsCount() < 96) {
+        if (sc.getBookedSeatsCount() < sc.getMaxToBook()) {
             String result = r.reserve("CR9", threadNo);
             System.out.println(result);
             try {
                 Thread.sleep(new Random().nextInt(11) * 1000);
             } catch (InterruptedException ex) {
                 Logger.getLogger(DatabaseConcurrencyAssigment4.class.getName()).log(Level.SEVERE, null, ex);
-
             }
 
             if (result != null) {
@@ -48,12 +48,19 @@ public class UserThread implements Runnable {
                     if (sc.getBookedSeatsCount() < 96) {
                         int status = r.book("CR9", result, threadNo);
                         System.out.println(result + ": " + status);
-                        if (status == 0) {
-                            sc.incrementBookedSeats();
-                        } else if (status == -3) {
-                            sc.incrementReservedAnTimedOutBookingSeats();
-                        } else {
-                            sc.incrementReservedAndOtherErrorBookingSeats();
+                        switch (status) {
+                            case 0:
+                                sc.incrementBookedSeats();
+                                break;
+                            case -2:
+                                sc.incrementOverReservedBecauseOfDelaySeats();
+                                break;
+                            case -3:
+                                sc.incrementReservedAndTimedOutBookingSeats();
+                                break;
+                            default:
+                                sc.incrementReservedAndOtherErrorBookingSeats();
+                                break;
                         }
                     }
                 } else {

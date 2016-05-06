@@ -23,20 +23,10 @@ public class DBFacade {
     private String dbHost = "jdbc:oracle:thin:@datdb.cphbusiness.dk:1521:dat";
     private String dbUsername, dbPassword;
 
-    private static DBFacade instance;
-
-    private DBFacade(String user, String pw) {
+    public DBFacade(String user, String pw) {
         this.dataMapper = new DataMapper();
         this.dbUsername = user;
         this.dbPassword = pw;
-        createConnection();
-    }
-
-    public static DBFacade getInstance() {
-        if (instance == null) {
-            instance = new DBFacade("db_027", "db2016");
-        }
-        return instance;
     }
 
     public boolean createConnection() {
@@ -69,8 +59,28 @@ public class DBFacade {
     public Integer book(String plane_no, String seat_no, long id) {
         return dataMapper.book(plane_no, seat_no, id, connection);
     }
-    
+
+    public Integer bookAll(String plane_no, long id) {
+        return dataMapper.bookAll(plane_no, id, connection);
+    }
+
     public Integer clearAllBookings(String plane_no) {
         return dataMapper.clearAllBookings(plane_no, connection);
+    }
+
+    public Integer notReservedCount(String plane_no) {
+        return dataMapper.notReservedCount(plane_no, connection);
+    }
+
+    public Boolean isAllReserved(String plane_no) {
+        return dataMapper.notReservedCount(plane_no, connection) == 0;
+    }
+
+    public Integer notBookedCount(String plane_no) {
+        return dataMapper.notBookedCount(plane_no, connection);
+    }
+
+    public Boolean isAllBooked(String plane_no) {
+        return dataMapper.notBookedCount(plane_no, connection) == 0;
     }
 }

@@ -13,13 +13,19 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class SharedCounter {
 
+    private Integer maxToBook;
     private AtomicInteger startedThreads = new AtomicInteger();
     private AtomicInteger reservedSeats = new AtomicInteger();
     private AtomicInteger bookedSeats = new AtomicInteger();
     private AtomicInteger failedToReserveSeats = new AtomicInteger();
     private AtomicInteger reservedAndNotBookedSeats = new AtomicInteger();
+    private AtomicInteger overReservedBecauseOfDelaySeats = new AtomicInteger();
     private AtomicInteger reservedAndTimedOutBookingSeats = new AtomicInteger();
     private AtomicInteger reservedAndOtherErrorBookingSeats = new AtomicInteger();
+
+    public SharedCounter(int maxToBook) {
+        this.maxToBook = maxToBook;
+    }
 
     public synchronized Integer incrementStartedThreads() {
         return startedThreads.incrementAndGet();
@@ -41,12 +47,20 @@ public class SharedCounter {
         return reservedAndNotBookedSeats.incrementAndGet();
     }
 
-    public synchronized Integer incrementReservedAnTimedOutBookingSeats() {
+    public synchronized Integer incrementOverReservedBecauseOfDelaySeats() {
+        return overReservedBecauseOfDelaySeats.incrementAndGet();
+    }
+    
+    public synchronized Integer incrementReservedAndTimedOutBookingSeats() {
         return reservedAndTimedOutBookingSeats.incrementAndGet();
     }
 
     public synchronized Integer incrementReservedAndOtherErrorBookingSeats() {
         return reservedAndOtherErrorBookingSeats.incrementAndGet();
+    }
+
+    public Integer getMaxToBook() {
+        return maxToBook;
     }
 
     public int getStartedThreadsCount() {
@@ -69,6 +83,10 @@ public class SharedCounter {
         return reservedAndNotBookedSeats.get();
     }
 
+    public int getOverReservedBecauseOfDelaySeatsCount() {
+        return overReservedBecauseOfDelaySeats.get();
+    }
+ 
     public int getReservedAndTimedOutBookingSeatsCount() {
         return reservedAndTimedOutBookingSeats.get();
     }
