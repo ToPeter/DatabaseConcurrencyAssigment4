@@ -22,6 +22,8 @@ public class DatabaseConcurrencyAssigment4 {
         SharedCounter sc = new SharedCounter();
         ArrayList<Thread> tenThreads = new ArrayList();
         UserThread userThread;
+        DBFacade dbf = DBFacade.getInstance();
+        System.out.println(dbf.clearAllBookings("CR9"));
 
         for (int i = 0; i < 10; i++) {
             userThread = new UserThread(sc);
@@ -47,7 +49,12 @@ public class DatabaseConcurrencyAssigment4 {
             tenThreads.get(i).interrupt();
         }
 
-        DBFacade.getInstance().closeConnection();
-        System.out.println(sc.getReservedSeatsCount() + " = " + sc.getBookedSeatsCount() + " + " + sc.getReservedAndNotBookedSeatsCount());
+        dbf.closeConnection();
+        System.out.println("total reserved seats: " + sc.getReservedSeatsCount());
+        System.out.println("total book seats: " + sc.getBookedSeatsCount());
+        System.out.println("failed to reserve seats: " + sc.getFailedToReserveSeatsCount());
+        System.out.println("total reserved and not booked (~25% of total reserved): " + sc.getReservedAndNotBookedSeatsCount());
+        System.out.println("total reserved and timed out for booking: " + sc.getReservedAndTimedOutBookingSeatsCount());
+        System.out.println("total reserved and not booked - other errors: " + sc.getReservedAndOtherErrorBookingSeatsCount());
     }
 }

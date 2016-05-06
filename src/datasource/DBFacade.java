@@ -69,4 +69,8 @@ public class DBFacade {
     public Integer book(String plane_no, String seat_no, long id) {
         return dataMapper.book(plane_no, seat_no, id, connection);
     }
+    
+    public Integer clearAllBookings(String plane_no) {
+        return dataMapper.clearAllBookings(plane_no, connection);
+    }
 }

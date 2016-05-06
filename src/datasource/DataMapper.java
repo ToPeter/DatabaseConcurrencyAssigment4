@@ -27,8 +27,8 @@ public class DataMapper {
                 + "where PLANE_NO = ? "
                 + "and (RESERVED is NULL "
                 + "  or (BOOKED is NULL and BOOKING_TIME < ?)) "
-                + "and ROWNUM <= 1 ";
-//                + "for update ";
+                + "and ROWNUM <= 1 "
+                + "for update ";
 
         String sqlString1 = "update SEAT "
                 + "set RESERVED = ?, BOOKING_TIME = ? "
@@ -142,6 +142,27 @@ public class DataMapper {
         } catch (SQLException ex) {
             Logger.getLogger(DataMapper.class.getName()).log(Level.SEVERE, null, ex);
             return -5;
+        }
+    }
+
+    public Integer clearAllBookings(String plane_no, Connection connection) {
+        PreparedStatement statement = null;
+        ResultSet rs;
+
+        String sqlString0 = "update SEAT "
+                + "set RESERVED = null, BOOKED = null, BOOKING_TIME = null "
+                + "where PLANE_NO = ? ";
+
+        try {
+            statement = connection.prepareStatement(sqlString0);
+            statement.setString(1, plane_no);
+            int count = statement.executeUpdate();
+            statement.close();
+            connection.commit();
+            return count;
+        } catch (SQLException ex) {
+            Logger.getLogger(DataMapper.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
         }
     }
 }
