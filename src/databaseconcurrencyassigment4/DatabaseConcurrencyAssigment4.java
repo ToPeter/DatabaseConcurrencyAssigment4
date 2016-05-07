@@ -43,10 +43,19 @@ public class DatabaseConcurrencyAssigment4 {
             tenThreads.add(t);
         }
 
+        Long last_threads_start_time = System.currentTimeMillis() / 1000;
+
         while (!dbf.isAllBooked(plane_no)) {
-            for (int i = 0; i < max_threads; i++) {
+            for (int i = 0; i < tenThreads.size(); i++) {
                 if (!tenThreads.get(i).isAlive()) {
                     tenThreads.remove(i);
+                    i--;
+                }
+            }
+
+            if (System.currentTimeMillis() / 1000 > last_threads_start_time) {
+                last_threads_start_time = System.currentTimeMillis() / 1000;
+                while (tenThreads.size() < max_threads) {
                     userThread = new UserThread(sc);
                     Thread t = new Thread(userThread);
                     t.start();
