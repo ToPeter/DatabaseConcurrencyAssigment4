@@ -66,9 +66,9 @@ public class DatabaseConcurrencyAssigment4 {
 
         dbf.closeConnection();
 
-        System.out.println("total reserved seats: " + sc.getReservedSeatsCount());
-        System.out.println("total book seats: " + sc.getBookedSeatsCount());
         System.out.println("failed to reserve seats: " + sc.getFailedToReserveSeatsCount());
+        System.out.println("total reserved seats: " + sc.getReservedSeatsCount());
+        System.out.println("total successfully booked seats: " + sc.getBookedSeatsCount());
         System.out.println("total reserved and not booked (~25% of total reserved): " + sc.getReservedAndNotBookedSeatsCount());
         System.out.println("total failed to book because of overbooking(because of the delay > 5s): " + sc.getOverReservedBecauseOfDelaySeatsCount());
         System.out.println("total reserved and timed out for booking: " + sc.getReservedAndTimedOutBookingSeatsCount());
