@@ -8,6 +8,8 @@ package databaseconcurrencyassigment4;
 import datasource.DBFacade;
 import static java.lang.Integer.min;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -64,9 +66,19 @@ public class DatabaseConcurrencyAssigment4 {
             }
         }
 
+        for (int i = 0; i < tenThreads.size(); i++) {
+            if (tenThreads.get(i).isAlive()) {
+                try {
+                    tenThreads.get(i).join();
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(DatabaseConcurrencyAssigment4.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+
         dbf.closeConnection();
 
-        System.out.println("failed to reserve seats: " + sc.getFailedToReserveSeatsCount());
+        System.out.println("\nfailed to reserve seats: " + sc.getFailedToReserveSeatsCount());
         System.out.println("total reserved seats: " + sc.getReservedSeatsCount());
         System.out.println("total successfully booked seats: " + sc.getBookedSeatsCount());
         System.out.println("total reserved and not booked (~25% of total reserved): " + sc.getReservedAndNotBookedSeatsCount());

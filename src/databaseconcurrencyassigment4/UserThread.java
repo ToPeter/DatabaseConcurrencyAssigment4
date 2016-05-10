@@ -41,7 +41,7 @@ public class UserThread implements Runnable {
 
             if (seatNb != null) {
                 sc.incrementReservedSeats();
-                System.out.println("\u001B[36mthread#" + threadNo + " reserved " + seatNb);
+                System.out.println("\u001B[34mthread#" + threadNo + " reserved " + seatNb);
 
 //              now try to book the reserved seat in 75% of the cases
                 if (new Random().nextInt(4) != 0) {
@@ -68,7 +68,7 @@ public class UserThread implements Runnable {
                     }
                 } else {
                     sc.incrementReservedAndNotBookedSeats();
-                    System.out.println("\u001B[34mthread#" + threadNo + " gave up after reserving " + seatNb);
+                    System.out.println("\u001B[36mthread#" + threadNo + " gave up after reserving " + seatNb);
                 }
             } else {
                 sc.incrementFailedToReserveSeats();
