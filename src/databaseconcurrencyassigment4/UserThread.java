@@ -32,43 +32,43 @@ public class UserThread implements Runnable {
         r = new Reservation("db_027", "db2016");
 
         if (sc.getBookedSeatsCount() < sc.getMaxToBook()) {
-            String result = r.reserve("CR9", threadNo);
+            String seatNb = r.reserve("CR9", threadNo);
             try {
                 Thread.sleep(new Random().nextInt(11) * 1000);
             } catch (InterruptedException ex) {
                 Logger.getLogger(DatabaseConcurrencyAssigment4.class.getName()).log(Level.SEVERE, null, ex);
             }
 
-            if (result != null) {
+            if (seatNb != null) {
                 sc.incrementReservedSeats();
-                System.out.println("\u001B[36mthread#" + threadNo + " reserved " + result);
+                System.out.println("\u001B[36mthread#" + threadNo + " reserved " + seatNb);
 
 //              now try to book the reserved seat in 75% of the cases
                 if (new Random().nextInt(4) != 0) {
                     if (sc.getBookedSeatsCount() < 96) {
-                        int status = r.book("CR9", result, threadNo);
+                        int status = r.book("CR9", seatNb, threadNo);
                         switch (status) {
                             case 0:
                                 sc.incrementBookedSeats();
-                                System.out.println("\u001B[32mthread#" + result + " succeeded to book: " + status);
+                                System.out.println("\u001B[32mthread#" + threadNo + " succeeded to book " + seatNb + ": status " + status);
                                 break;
                             case -2:
                                 sc.incrementOverReservedBecauseOfDelaySeats();
-                                System.out.println("\u001B[31mthread#" + result + " failed to book: " + status);
+                                System.out.println("\u001B[31mthread#" + threadNo + " failed to book " + seatNb + ": status " + status);
                                 break;
                             case -3:
                                 sc.incrementReservedAndTimedOutBookingSeats();
-                                System.out.println("\u001B[31mthread#" + result + " failed to book: " + status);
+                                System.out.println("\u001B[31mthread#" + threadNo + " failed to book " + seatNb + ": status " + status);
                                 break;
                             default:
                                 sc.incrementReservedAndOtherErrorBookingSeats();
-                                System.out.println("\u001B[31mthread#" + result + " failed to book: " + status);
+                                System.out.println("\u001B[31mthread#" + threadNo + " failed to book " + seatNb + ": status " + status);
                                 break;
                         }
                     }
                 } else {
                     sc.incrementReservedAndNotBookedSeats();
-                    System.out.println("\u001B[34mthread#" + threadNo + " gave up after reserving");
+                    System.out.println("\u001B[34mthread#" + threadNo + " gave up after reserving " + seatNb);
                 }
             } else {
                 sc.incrementFailedToReserveSeats();
