@@ -13,50 +13,38 @@ import datasource.DBFacade;
  */
 public class Reservation {
 
-    
     private DBFacade dbFacade;
-    private String user, pw;
- 
-    
-    
-    public Reservation(String user, String pw) { 
-        this.user = user;
-        this.pw = pw;
-        
-        dbFacade = new DBFacade();
+
+    public Reservation(String user, String pw) {
+        dbFacade = new DBFacade(user, pw);
+    }
+
+    public String reserve(String plane_no, long id) {
         dbFacade.createConnection();
+        String result = dbFacade.reserve(plane_no, id);
+        dbFacade.closeConnection();
+        return result;
     }
-    
-    public String reserve(String plane_no, long id){
-        
-        // check book 
-        
-        return null;
+
+    public Integer book(String plane_no, String seat_no, long id) {
+        dbFacade.createConnection();
+        Integer result = dbFacade.book(plane_no, seat_no, id);
+        dbFacade.closeConnection();
+        return result;
     }
-    
-    public Integer book(String plane_no, String	seat_no, long	id){
-        
-        return null;
+
+    public boolean isAllBooked(String plane_no) {
+        dbFacade.createConnection();
+        Boolean result = dbFacade.isAllBooked(plane_no);
+        dbFacade.closeConnection();
+        return result;
     }
-    
-    public boolean bookAll (String plane_no){
-        return false;
+
+    public boolean isAllReserved(String plane_no) {
+        dbFacade.createConnection();
+        Boolean result = dbFacade.isAllReserved(plane_no);
+        dbFacade.closeConnection();
+        return result;
     }
-    
-    public boolean clearAllBookings(String plane_no){
-        return false;
-    }
-            
-    public boolean isAllBooked(String plane_no){
-        
-        return false;
-    }
-    
-    public boolean isAllReserved(String plane_no){
-    
-        return false;
-    }
-    
-    
-    
+
 }
